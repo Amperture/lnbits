@@ -1,5 +1,6 @@
 import json
 import datetime
+import bcrypt
 from uuid import uuid4
 from typing import List, Optional, Dict
 
@@ -58,6 +59,28 @@ async def update_user_extension(*, user_id: str, extension: str, active: int) ->
         VALUES (?, ?, ?)
         """,
         (user_id, extension, active),
+    )
+
+
+async def register_user_email_password(user_id: str, email: str, password: str) -> Optional[User]:
+    user = await db.fetchone("SELECT id, email FROM accounts WHERE id = ?", (user_id,))
+
+    if user:
+        hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+        await db.execute(
+            """
+                UPDATE accounts
+                    SET password = ? ,
+                        email = ? ,
+                    WHERE id = ?
+                """,
+            (hashed_password, email, user_id),
+        )
+
+    return (
+        User(**{**user, **{"extensions": [e[0] for e in extensions], "wallets": [Wallet(**w) for w in wallets]}})
+        if user
+        else None
     )
 
 
