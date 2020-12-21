@@ -1,0 +1,176 @@
+{% extends "base.html" %} {% from "macros.jinja" import window_vars with context
+%} {% block page %}
+<div class="row q-col-gutter-md">
+  <div class="col-12 col-md-8 col-lg-7 q-gutter-y-md">
+    <q-card>
+      <q-card-section>
+        <q-btn
+            unelevated
+            color="deep-purple"
+            @click="serverBuyDialog.show = true"
+            >Create Server</q-btn>
+    </q-card>
+    <q-card>
+        <q-card-section>
+            <q-table
+                title="Servers"
+                dense
+                flat
+                :data="servers"
+                row-key="id"
+                :columns="serversTable.columns"
+                :pagination.sync="serversTable.pagination"
+                >
+              {% raw %}
+              <template v-slot:header="props">
+                <q-tr :props="props">
+                  <q-th auto-width></q-th>
+                  <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                    {{ col.label }}
+                  </q-th>
+                  <q-th auto-width></q-th>
+                </q-tr>
+              </template>
+              <template v-slot:body="props">
+                <q-tr :props="props">
+                  <q-td auto-width>
+                    <q-btn
+                      unelevated
+                      dense
+                      size="xs"
+                      icon="account_balance"
+                      :color="($q.dark.isActive) ? 'grey-7' : 'grey-5'"
+                      type="a"
+                      :href="props.row.walllink"
+                      target="_blank"
+                    ></q-btn>
+                    <q-tooltip> Top Up Server Time </q-tooltip>
+                  </q-td>
+                  <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                    {{ col.value }}
+                  </q-td>
+                  <q-td auto-width>
+                    <q-btn
+                      flat
+                      dense
+                      size="xs"
+                      @click="deleteWallet(props.row.id)"
+                      icon="cancel"
+                      color="pink"
+                    ></q-btn>
+                  </q-td>
+                </q-tr>
+              </template>
+              {% endraw %}
+            </q-table>
+        </q-card-section>
+    </q-card>
+  </div>
+
+  <div class="col-12 col-md-4 col-lg-5 q-gutter-y-md">
+      <q-card>
+          <q-card-section class="">
+                <div class="text-h6">Bitclouds Extension API</div>
+          </q-card-section>
+          <q-card-section class="q-pa-none">
+              <q-separator></q-separator>
+              <q-list>
+                  <q-separator></q-separator>
+              </q-list>
+
+          </q-card-section>
+      </q-card>
+  </div>
+</div>
+
+<div>
+  <q-dialog v-model="serverBuyDialog.show" position="top">
+    <q-card class="q-pa-lg q-pt-xl" style="width: 500px">
+      <q-form @submit="sendUserFormData" class="q-gutter-md">
+        <q-select
+          filled
+          dense
+          :options="serverTypes"
+          label=""
+        ></q-select>
+        <q-input
+          filled
+          dense
+          v-model.trim="serverBuyDialog.data.usrname"
+          label="Initial wallet name"
+        ></q-input>
+
+        <q-btn
+          unelevated
+          color="deep-purple"
+          :disable="serverBuyDialog.data.walname == null"
+          type="submit"
+          >Create User</q-btn
+        >
+        <q-btn v-close-popup flat color="grey" class="q-ml-auto">Cancel</q-btn>
+      </q-form>
+    </q-card>
+  </q-dialog>
+</div>
+
+{% endblock %}
+
+{% block scripts %} {{ window_vars(user) }}
+<script>
+  new Vue({
+    el: '#vue',
+    mixins: [windowMixin],
+    data: function () {
+      return {
+        servers: [
+                {id: 'blahblah-420', type: 'clightning', exp: 1000}
+        ],
+        serverTypes: [],
+        serverBuyDialog: {
+            show: false,
+            data: {
+            },
+        },
+        serversTable: {
+            columns: [
+                {name: 'id', align: 'left', label: 'ID', field: 'id'},
+                {name: 'type', align: 'left', label: 'Type', field: 'type'},
+                {name: 'exp', align: 'left', label: 'Expires On', field: 'exp'},
+            ],
+            pagination: {
+                rowsPerPage: 20,
+            }
+        },
+      }
+    },
+
+    methods: {
+      getServerTypes: function () {
+        var self = this
+        LNbits.api.request(
+            "GET",
+            "/bitclouds/api/v1/server_types",
+            this.g.user.wallets[0].inkey
+        )
+        .then(function (response) {
+            this.serverTypes = response.data
+        })
+      },
+    },
+    created: function () {
+      this.getServerTypes()
+
+      // axios is available for making requests
+      axios({
+        method: 'GET',
+        url: '/example/api/v1/tools',
+        headers: {
+          'X-example-header': 'not-used'
+        }
+      }).then(function (response) {
+        self.tools = response.data
+      })
+    }
+  })
+</script>
+{% endblock %}
