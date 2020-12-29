@@ -1,0 +1,24 @@
+<div>
+  <q-dialog v-model="serverBuyDialog.show" position="top">
+    <q-card class="q-pa-lg q-pt-xl" style="width: 500px">
+      <q-form @submit="sendUserFormData" class="q-gutter-md">
+        <q-select
+          filled
+          dense
+          :options="serverBuyDialog.data.serverTypes"
+          label="Select an Image"
+          v-model='serverBuyDialog.data.selectedServerType'
+          ></q-select>
+        <q-btn
+          unelevated
+          color="deep-purple"
+          :disable="serverBuyDialog.data.selectedServerType == ''"
+          @click='submitServerInvoice'
+          >Submit Request</q-btn>
+        <q-btn v-close-popup flat color="grey" class="q-ml-auto">Cancel</q-btn>
+      </q-form>
+    </q-card>
+  </q-dialog>
+</div>
+
+{% include "bitclouds/_server_pay_confirm_dialog.html" %}
