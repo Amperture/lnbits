@@ -1,0 +1,33 @@
+<div>
+  <q-dialog v-model="serverPayConfirmDialog.show" position="top">
+    <q-card class="q-pa-lg q-pt-xl" style="width: 500px">
+      <q-card-section>
+        <div class='text-h6'>Server Invoice Received</div>
+        {% raw %} 
+        <div class='text-subtitle'>Server Name: {{ serverPayConfirmDialog['data']['name']}}</div>
+        <div class='text-subtitle'>Server Specs: {{ serverPayConfirmDialog['data']['performance']}}</div>
+        <div class='text-subtitle'>Server Billing Price: {{ serverPayConfirmDialog['data']['ongoingPrice']}}</div>
+        <div class='text-subtitle'>Server Setup Fee: {{ serverPayConfirmDialog['data']['setupFee']}}</div>
+        {% endraw %} 
+      </q-card-section>
+      <q-card-section>
+        <div class='text-h6'>Disclaimer</div>
+        {% raw %} 
+        <q-scroll-area style='height: 400px; max-width: 200px;'>
+            {{ serverPayConfirmDialog['data']['disclaimer'] }}
+        </q-scroll-area>
+        {% endraw %} 
+      </q-card-section>
+      <q-separator></q-separator>
+      <q-card-section>
+        {% raw %}
+        <p class="text-wrap">
+        <strong>Description:</strong> {{ serverPayConfirmDialog.payment_data.description }}<br />
+      <strong>Expire Date:</strong> {{ serverPayConfirmDialog.payment_data.expires_on }}<br />
+    <strong>Hash:</strong> {{ serverPayConfirmDialog.payment_data.payment_hash }}<br />
+        </p>
+        {% endraw %}
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+</div>
