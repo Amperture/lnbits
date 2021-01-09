@@ -9,7 +9,6 @@ from quart import jsonify, request
 from http import HTTPStatus
 from lnbits import bolt11
 from lnbits.core.services import pay_invoice
-# from lnbits.decorators import api_check_admin_key
 
 from . import bitclouds_ext
 
