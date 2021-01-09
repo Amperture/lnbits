@@ -1,11 +1,15 @@
-# from sqlite3 import Row
-# from typing import NamedTuple
+from sqlite3 import Row
+from typing import NamedTuple
 
 
-# class Example(NamedTuple):
-#    id: str
-#    wallet: str
-#
-#    @classmethod
-#    def from_row(cls, row: Row) -> "Example":
-#        return cls(**dict(row))
+class Instance(NamedTuple):
+    id: str
+    wallet: str
+    name: str
+    image: str
+    expiry: int
+
+
+    @classmethod
+    def from_row(cls, row: Row) -> "Instance":
+        return cls(**dict(row))
